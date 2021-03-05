@@ -50,14 +50,21 @@ type Endpoints []string
 
 // IsValid validates if a given HTTP request endpoint is valid or not.
 func (e Endpoints) IsValid(r *http.Request) bool {
-	parts := strings.Split(r.URL.Path, "/")
-	endpoint := parts[len(parts)-1]
+	endpoint := e.ParseEndpoint(r)
 	for _, name := range e {
 		if endpoint == name {
 			return false
 		}
 	}
 	return true
+}
+
+func (e Endpoints) ParseEndpoint(r *http.Request) string {
+	if r.URL.Path == "/" {
+		return r.URL.Path
+	}
+	parts := strings.Split(r.URL.Path, "/")
+	return parts[len(parts)-1]
 }
 
 func Server(o ServerOptions) {
